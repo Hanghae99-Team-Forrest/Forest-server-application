@@ -1,6 +1,6 @@
-package com.forrest.server.web.domain.category;
+package com.forrest.server.web.entity.category;
 
-import com.forrest.server.web.domain.BaseTimeEntity;
+import com.forrest.server.web.entity.BaseTimeEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;

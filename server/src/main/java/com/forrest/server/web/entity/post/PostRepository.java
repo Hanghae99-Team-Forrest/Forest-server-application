@@ -1,4 +1,4 @@
-package com.forrest.server.web.domain.post;
+package com.forrest.server.web.entity.post;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
