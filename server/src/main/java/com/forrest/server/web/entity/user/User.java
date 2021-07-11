@@ -1,8 +1,11 @@
 package com.forrest.server.web.entity.user;
 
+import com.forrest.server.util.enumclass.UserRole;
 import com.forrest.server.web.entity.BaseTimeEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -45,20 +48,23 @@ public class User extends BaseTimeEntity {
 //    @Column(nullable = false)
 //    private String profileImg;
 
+    @Enumerated(EnumType.STRING)
+    private UserRole userRole;
+
     @Builder
-    public User ( @NonNull String email, @NonNull String password, @NonNull String nickName ) {
+    public User ( @NonNull String email, @NonNull String password, @NonNull String nickName, UserRole userRole ) {
         this.email = email;
         this.password = password;
         this.nickName = nickName;
+        this.userRole = userRole;
     }
 
     @Builder(builderMethodName = "kakoBuilder")
-    public User ( Long kakaoId, @NonNull String email, @NonNull String password, @NonNull String nickName ) {
+    public User ( Long kakaoId, @NonNull String email, @NonNull String password, @NonNull String nickName, UserRole userRole ) {
         this.kakaoId = kakaoId;
         this.email = email;
         this.password = password;
         this.nickName = nickName;
+        this.userRole = userRole;
     }
-
-
 }

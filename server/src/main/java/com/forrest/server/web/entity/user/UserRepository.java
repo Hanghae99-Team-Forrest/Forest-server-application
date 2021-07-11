@@ -1,6 +1,6 @@
 package com.forrest.server.web.entity.user;
 
-import javax.jws.soap.SOAPBinding.Use;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -9,6 +9,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 
 
-public interface UserRepository extends JpaRepository<Use, Long> {
-
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findByEmail ( String email );
 }
