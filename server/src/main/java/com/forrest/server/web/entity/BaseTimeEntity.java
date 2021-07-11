@@ -1,4 +1,4 @@
-package com.forrest.server.web.domain;
+package com.forrest.server.web.entity;
 
 /**
  * @Created by Bloo

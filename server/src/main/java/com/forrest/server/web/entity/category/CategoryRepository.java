@@ -1,4 +1,4 @@
-package com.forrest.server.web.domain.category;
+package com.forrest.server.web.entity.category;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

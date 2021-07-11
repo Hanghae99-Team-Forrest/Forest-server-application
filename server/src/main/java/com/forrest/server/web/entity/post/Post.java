@@ -1,7 +1,7 @@
-package com.forrest.server.web.domain.post;
+package com.forrest.server.web.entity.post;
 
-import com.forrest.server.web.domain.BaseTimeEntity;
-import com.forrest.server.web.domain.category.Category;
+import com.forrest.server.web.entity.BaseTimeEntity;
+import com.forrest.server.web.entity.category.Category;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
