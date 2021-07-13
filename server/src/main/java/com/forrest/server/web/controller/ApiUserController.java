@@ -25,9 +25,9 @@ public class ApiUserController {
 
     private final ApiUserService apiUserService;
 
-    @PostMapping("")
+    @PostMapping("/signup")
     public ResponseEntity<Void> signUp( @RequestBody @Valid SignUpReqDto signUpReqDto ) {
         apiUserService.signUp(signUpReqDto);
-        return ResponseEntity.created(URI.create("/api/users")).build();
+        return ResponseEntity.created(URI.create("/api/users/signup")).build();
     }
 }

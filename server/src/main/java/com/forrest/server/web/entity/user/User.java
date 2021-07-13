@@ -1,19 +1,22 @@
 package com.forrest.server.web.entity.user;
 
-import com.forrest.server.util.enumclass.UserRole;
-import com.forrest.server.web.entity.BaseTimeEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.forrest.server.web.entity.authority.Authority;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import lombok.AccessLevel;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
+import lombok.Setter;
 
 /**
  * @Created by Bloo
@@ -21,50 +24,39 @@ import lombok.NonNull;
  */
 
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Getter
 @Entity
-public class User extends BaseTimeEntity {
+@Table (name = "user")
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+public class User {
 
+    @JsonIgnore
     @Id
+    @Column(name = "user_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long userId;
 
-    private Long kakaoId;
+    @Column(name = "username", length = 50, unique = true)
+    private String username;
 
-    @NonNull
-    @Column(nullable = false, unique = true)
-    private String email;
-
-    @NonNull
-    @Column(nullable = false)
+    @JsonIgnore
+    @Column(name = "password", length = 100)
     private String password;
 
-    @NonNull
-    @Column(nullable = false)
+    @Column(name = "nickname", length = 50)
     private String nickName;
 
-    // TODO: 2021.07.11 -Blue 프로필 이미지 등록 정책을 결정 후 기능을 개발 합니다.
-//    @Column(nullable = false)
-//    private String profileImg;
+    @JsonIgnore
+    @Column(name = "activated")
+    private boolean activated;
 
-    @Enumerated(EnumType.STRING)
-    private UserRole userRole;
-
-    @Builder
-    public User ( @NonNull String email, @NonNull String password, @NonNull String nickName, UserRole userRole ) {
-        this.email = email;
-        this.password = password;
-        this.nickName = nickName;
-        this.userRole = userRole;
-    }
-
-    @Builder(builderMethodName = "kakoBuilder")
-    public User ( Long kakaoId, @NonNull String email, @NonNull String password, @NonNull String nickName, UserRole userRole ) {
-        this.kakaoId = kakaoId;
-        this.email = email;
-        this.password = password;
-        this.nickName = nickName;
-        this.userRole = userRole;
-    }
+    @ManyToMany
+    @JoinTable (
+        name = "user_authority",
+        joinColumns = {@JoinColumn (name = "user_id", referencedColumnName = "user_id")},
+        inverseJoinColumns = {@JoinColumn(name = "authority_name", referencedColumnName = "authority_name")})
+    private Set<Authority> authorities;
 }

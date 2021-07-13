@@ -24,13 +24,13 @@ public class ApiUserService {
     private final PasswordEncoder passwordEncoder;
 
     public void signUp ( SignUpReqDto signUpReqDto ) {
-        isDuplicateEmail(signUpReqDto.getEmail());
-        User user = signUpReqDto.toEntity(passwordEncoder.encode(signUpReqDto.getEmail()));
+        isDuplicateEmail(signUpReqDto.getUsername());
+        User user = signUpReqDto.toEntity(passwordEncoder.encode(signUpReqDto.getUsername()));
         userRepository.save(user);
     }
 
     private void isDuplicateEmail ( String email ) {
-        userRepository.findByEmail(email).ifPresent(
+        userRepository.findOneWithAuthoritiesByUsername(email).ifPresent(
             user -> {
                 throw new AlreadyExistEmailException();
             });

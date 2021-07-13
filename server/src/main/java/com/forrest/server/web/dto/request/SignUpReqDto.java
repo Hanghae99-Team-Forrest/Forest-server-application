@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class SignUpReqDto {
 
     @NotBlank(message = "Email은 필수 값입니다")
-    private String email;
+    private String username;
 
     @NotBlank(message = "패스워드는 필수 값입니다.")
     private String password;
@@ -29,7 +29,7 @@ public class SignUpReqDto {
 
     @Builder
     public SignUpReqDto ( String email, String password, String nickName ) {
-        this.email = email;
+        this.username = email;
         this.password = password;
         this.nickName = nickName;
     }
@@ -37,10 +37,10 @@ public class SignUpReqDto {
     // 일반 회원가입
     public User toEntity(String encodedPassword) {
         return User.builder()
-            .email(email)
+            .username(username)
             .password(encodedPassword)
             .nickName(nickName)
-            .userRole(UserRole.ROLE_USER)
+            .activated(true)
             .build();
     }
 }

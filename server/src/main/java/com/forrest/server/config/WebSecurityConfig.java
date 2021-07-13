@@ -1,8 +1,12 @@
 package com.forrest.server.config;
 
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
+import com.forrest.server.security.jwt.JwtAccessDeniedHandler;
+import com.forrest.server.security.jwt.JwtAuthenticationEntryPoint;
+import com.forrest.server.security.jwt.JwtSecurityConfig;
+import com.forrest.server.security.jwt.TokenProvider;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -16,37 +20,66 @@ import org.springframework.security.crypto.password.PasswordEncoder;
  * @Date: 2021/07/11
  */
 
-
-@Configuration
+@RequiredArgsConstructor
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    // TODO: 2021.07.11 -Blue  - 추후 권한 조건 만들기
+
+    private final TokenProvider tokenProvider;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    //private final CorsFilter corsFilter;
 
     @Bean
-    public PasswordEncoder passwordEncoder () {
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
     @Override
-    public void configure ( WebSecurity web ) throws Exception {
-        web
-            .ignoring()
-            .requestMatchers(
-                PathRequest.toH2Console()
+    public void configure(WebSecurity web) {
+        web.ignoring()
+            .antMatchers(
+                "/h2-console/**"
+                ,"/favicon.ico"
+                ,"/error"
             );
     }
 
     @Override
-    protected void configure ( HttpSecurity http ) throws Exception {
-        http
-                .csrf().disable();
-        http
-                .authorizeRequests(request -> {
-                    request.anyRequest().permitAll();  //todo 추후 인증 요건 추가하기
-                })
-                .formLogin().disable()
-                .sessionManagement( session ->
-                    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
+    protected void configure( HttpSecurity httpSecurity) throws Exception {
+        httpSecurity
+            // token을 사용하는 방식이기 때문에 csrf를 disable합니다.
+            .csrf().disable()
+
+            // .addFilterBefore(corsFilter, UsernamePasswordAuthenticationFilter.class)
+
+            .exceptionHandling()
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(jwtAccessDeniedHandler)
+
+            // enable h2-console
+            .and()
+            .headers()
+            .frameOptions()
+            .sameOrigin()
+
+            // 세션을 사용하지 않기 때문에 STATELESS로 설정
+            .and()
+            .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
+            .and()
+            .authorizeRequests()
+                .antMatchers("/api/hello").permitAll()
+                .antMatchers("/api/authenticate").permitAll()
+                .antMatchers("/api/users/signup").permitAll()
+            .anyRequest().authenticated()
+
+            .and()
+            .apply(new JwtSecurityConfig(tokenProvider));
     }
+
+
+
+
 }
