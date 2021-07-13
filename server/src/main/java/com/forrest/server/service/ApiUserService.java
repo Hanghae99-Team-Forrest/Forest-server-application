@@ -1,15 +1,18 @@
 package com.forrest.server.service;
 
+import com.forrest.server.util.SecurityUtil;
 import com.forrest.server.util.exception.AlreadyExistEmailException;
 import com.forrest.server.web.dto.request.SignUpReqDto;
 import com.forrest.server.web.entity.authority.Authority;
 import com.forrest.server.web.entity.user.User;
 import com.forrest.server.web.entity.user.UserRepository;
 import java.util.Collections;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @Created by Bloo
@@ -48,5 +51,15 @@ public class ApiUserService {
             user -> {
                 throw new AlreadyExistEmailException();
             });
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<User> getUserWithAuthorities(String username) {
+        return userRepository.findOneWithAuthoritiesByUsername(username);
+    }
+
+    @Transactional (readOnly = true)
+    public Optional<User> getMyUserWithAuthorities() {
+        return SecurityUtil.getCurrentUsername().flatMap(userRepository::findOneWithAuthoritiesByUsername);
     }
 }

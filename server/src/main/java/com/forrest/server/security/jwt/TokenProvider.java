@@ -52,6 +52,7 @@ public class TokenProvider implements InitializingBean {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
+
     public String createToken(Authentication authentication) {
         String authorities = authentication.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)
@@ -63,6 +64,7 @@ public class TokenProvider implements InitializingBean {
         return Jwts.builder()
             .setSubject(authentication.getName())
             .claim(AUTHORITIES_KEY, authorities)
+            //.claim("nickName", "21321")
             .signWith(key, SignatureAlgorithm.HS512)
             .setExpiration(validity)
             .compact();

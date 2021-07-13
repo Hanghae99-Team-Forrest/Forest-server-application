@@ -1,5 +1,6 @@
 package com.forrest.server.web.dto.request;
 
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,7 @@ import lombok.NoArgsConstructor;
 @Getter
 public class SignUpReqDto {
 
+    @Email
     @NotBlank(message = "Email은 필수 값입니다")
     private String username;
 
@@ -26,6 +28,7 @@ public class SignUpReqDto {
 
     @NotBlank(message = "Nick Name은 필수 값입니다.")
     private String nickName;
+
     //private String profileImg
 
 }
