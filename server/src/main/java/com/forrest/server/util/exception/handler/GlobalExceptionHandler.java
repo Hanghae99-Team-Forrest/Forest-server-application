@@ -1,6 +1,7 @@
 package com.forrest.server.util.exception.handler;
 
 import com.forrest.server.util.exception.AlreadyExistEmailException;
+import com.forrest.server.util.exception.CategoryNotFoundException;
 import com.forrest.server.util.exception.UnauthorizedException;
 import com.forrest.server.web.dto.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -22,19 +23,26 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(AlreadyExistEmailException.class)
-    ErrorResponse handleAlreadyExistEmailException(AlreadyExistEmailException ex) {
+    public ErrorResponse handleAlreadyExistEmailException(AlreadyExistEmailException ex) {
         return ErrorResponse.of(HttpStatus.BAD_REQUEST , ex.getMessage());
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    ErrorResponse handleMethodArgumentNotValidException (MethodArgumentNotValidException ex) {
+    public ErrorResponse handleMethodArgumentNotValidException (MethodArgumentNotValidException ex) {
         return ErrorResponse.of(HttpStatus.BAD_REQUEST , ex.getFieldError());
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(UnauthorizedException.class)
-    ErrorResponse handleUnauthorizedException ( UnauthorizedException  ex) {
+    public ErrorResponse handleUnauthorizedException ( UnauthorizedException  ex) {
         return ErrorResponse.of(HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ErrorResponse handleCategoryNotFoundException( CategoryNotFoundException ex ) {
+        return ErrorResponse.of(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
 }

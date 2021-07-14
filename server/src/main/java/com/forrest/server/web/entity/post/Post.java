@@ -1,5 +1,6 @@
 package com.forrest.server.web.entity.post;
 
+import com.forrest.server.web.dto.request.PostSaveDto;
 import com.forrest.server.web.entity.BaseTimeEntity;
 import com.forrest.server.web.entity.category.Category;
 import javax.persistence.CascadeType;
@@ -28,28 +29,52 @@ public class Post  extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = false)
+    private String userName;
+
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String content;
 
-    @Column(nullable = false )
-    private int grade;
-
     @Column(nullable = false)
-    private boolean open;
+    private String password;
+
+    @Column(nullable = true)
+    private String imgUrl;
+
+
+//    @Column(nullable = false )
+//    private int grade;
+
+
+//    @Column(nullable = false)
+//    private boolean open;
 
     @ManyToOne ( fetch = FetchType.LAZY,
                  cascade = CascadeType.ALL )
     private Category category;
 
     @Builder
-    public Post ( String title, String content, int grade, boolean open ) {
+    public Post ( String userName, String title, String content, String imgUrl,
+        Category category ) {
+        this.userName = userName;
         this.title = title;
         this.content = content;
-        this.grade = grade;
-        this.open = open;
+        this.imgUrl = imgUrl;
+        this.category = category;
     }
 
+    //    @Builder
+//    public Post ( String userName, String title, String content, int grade, String imgUrl,
+//        boolean open, Category category ) {
+//        this.userName = userName;
+//        this.title = title;
+//        this.content = content;
+//        this.grade = grade;
+//        this.imgUrl = imgUrl;
+//        this.open = open;
+//        this.category = category;
+//    }
 }
