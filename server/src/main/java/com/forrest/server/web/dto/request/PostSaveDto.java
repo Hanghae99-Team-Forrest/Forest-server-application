@@ -2,7 +2,6 @@ package com.forrest.server.web.dto.request;
 
 import com.forrest.server.web.entity.category.Category;
 import com.forrest.server.web.entity.post.Post;
-import io.swagger.annotations.ApiModelProperty;
 import javax.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -43,6 +42,8 @@ public class PostSaveDto {
            .userName(userName)
            .content(content)
            .imgUrl(imgUrl)
+           .password(postPassword)
+           .category(category)
            .build();
     }
 }

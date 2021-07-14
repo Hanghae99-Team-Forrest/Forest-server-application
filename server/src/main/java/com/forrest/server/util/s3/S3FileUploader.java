@@ -60,11 +60,12 @@ public class S3FileUploader {
         File uploadFile = convert(multipartFile)
             .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File로 전환이 실패했습니다."));
 
+        System.out.println("업로드 파일 이름:" + uploadFile);
+
         return upload(uploadFile, dirName);
     }
 
     private String upload(File uploadFile, String dirName) {
-        //String fileName = dirName + "/" + uploadFile.getName();
         String fileName = dirName + "/" + UUID.randomUUID().toString().replaceAll("-", ""); // 버킷안에 dirName 폴더로 UUID를 사용해 랜덤이름으로 파일이름 저장
         String uploadImageUrl = putS3(uploadFile, fileName);
         removeNewFile(uploadFile);
@@ -87,17 +88,14 @@ public class S3FileUploader {
         }
     }
 
-    // File Converter
     private Optional<File> convert(MultipartFile file) throws IOException {
         File convertFile = new File(file.getOriginalFilename());
-
         if(convertFile.createNewFile()) {
             try ( FileOutputStream fos = new FileOutputStream(convertFile)) {
                 fos.write(file.getBytes());
             }
             return Optional.of(convertFile);
         }
-
         return Optional.empty();
     }
 

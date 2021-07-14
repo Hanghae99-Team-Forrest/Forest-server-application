@@ -57,15 +57,15 @@ public class Post  extends BaseTimeEntity {
     private Category category;
 
     @Builder
-    public Post ( String userName, String title, String content, String imgUrl,
-        Category category ) {
+    public Post ( String userName, String title, String content, String password,
+        String imgUrl, Category category ) {
         this.userName = userName;
         this.title = title;
         this.content = content;
+        this.password = password;
         this.imgUrl = imgUrl;
         this.category = category;
     }
-
     //    @Builder
 //    public Post ( String userName, String title, String content, int grade, String imgUrl,
 //        boolean open, Category category ) {

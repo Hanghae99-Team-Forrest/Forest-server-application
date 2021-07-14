@@ -1,15 +1,21 @@
 package com.forrest.server.service;
 
 import com.forrest.server.util.exception.CategoryNotFoundException;
+import com.forrest.server.util.exception.handler.PostNotFoundException;
 import com.forrest.server.util.s3.S3FileUploader;
 import com.forrest.server.web.dto.request.PostSaveDto;
+import com.forrest.server.web.dto.response.PostDetailResponse;
+import com.forrest.server.web.dto.response.PostSimpleResponse;
 import com.forrest.server.web.entity.category.Category;
 import com.forrest.server.web.entity.category.CategoryRepository;
-import com.forrest.server.web.entity.user.UserRepository;
+import com.forrest.server.web.entity.post.PostRepository;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -24,7 +30,7 @@ public class ApiPostService {
 
     private static final String DIR_NAME = "static";
 
-    private final UserRepository userRepository;
+    private final PostRepository postRepository;
     private final CategoryRepository categoryRepository;
     private final S3FileUploader s3FileUploader;
 
@@ -35,22 +41,41 @@ public class ApiPostService {
             .orElseThrow(CategoryNotFoundException::new);
 
         String url = s3FileUploader.upload(saveDto.getMultipartFile(), DIR_NAME);
-        saveDto.toEntity(url, category);
+
+        postRepository.save( saveDto.toEntity(url, category) );
     }
 
+    @Transactional(readOnly = true)
+    public PostDetailResponse findPostDetailById ( Long id ) {
 
+        return postRepository.findById(id)
+            .map(PostDetailResponse::of)
+            .orElseThrow(PostNotFoundException::new);
+    }
 
+    @Transactional(readOnly = true)
+    public List<PostSimpleResponse> findAllPosts () {
 
+        return postRepository.findAll()
+            .stream()
+            .map(PostSimpleResponse::of)
+            .collect(Collectors.toList());
+    }
+    
+    @Transactional(readOnly = true)
+    public List<PostSimpleResponse> findAllPostsByCategoryId ( Long id ) {
 
-    // --------------------- 테스트 ----------------------------
+        Category category = categoryRepository.findById(id)
+            .orElseThrow(CategoryNotFoundException::new);
 
-    public String savePost2 ( PostSaveDto saveDto, MultipartFile multipartFile ) throws IOException {
-//        MultipartFile multipartFile = saveDto.getMultipartFile();
-        System.out.println("파일 두개 호출");
-        System.out.println(saveDto.getContent());
-
-        String url = s3FileUploader.upload(multipartFile, DIR_NAME);
-
-        return url;
+        return postRepository.findByCategory(category)
+            .stream()
+            .map(PostSimpleResponse::of)
+            .collect(Collectors.toList());
+    }
+    
+    @Transactional
+    public void updatePost ( Long id ) {
+        // TODO: 2021.07.14 -Blue 
     }
 }

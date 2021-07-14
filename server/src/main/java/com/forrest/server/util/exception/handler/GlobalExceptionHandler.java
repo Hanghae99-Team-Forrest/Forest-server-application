@@ -45,4 +45,10 @@ public class GlobalExceptionHandler {
         return ErrorResponse.of(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(PostNotFoundException.class)
+    public ErrorResponse handlePostNotFoundException( PostNotFoundException ex ) {
+        return ErrorResponse.of(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
 }
