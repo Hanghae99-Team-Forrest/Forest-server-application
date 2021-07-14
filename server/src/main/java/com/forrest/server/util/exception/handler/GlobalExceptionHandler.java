@@ -1,6 +1,7 @@
 package com.forrest.server.util.exception.handler;
 
 import com.forrest.server.util.exception.AlreadyExistEmailException;
+import com.forrest.server.util.exception.UnauthorizedException;
 import com.forrest.server.web.dto.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -29,5 +30,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     ErrorResponse handleMethodArgumentNotValidException (MethodArgumentNotValidException ex) {
         return ErrorResponse.of(HttpStatus.BAD_REQUEST , ex.getFieldError());
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(UnauthorizedException.class)
+    ErrorResponse handleUnauthorizedException ( UnauthorizedException  ex) {
+        return ErrorResponse.of(HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
 }

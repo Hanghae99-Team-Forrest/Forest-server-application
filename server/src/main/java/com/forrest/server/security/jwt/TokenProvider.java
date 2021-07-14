@@ -10,6 +10,7 @@ import io.jsonwebtoken.security.Keys;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -53,8 +54,9 @@ public class TokenProvider implements InitializingBean {
     }
 
 
-    public String createToken(Authentication authentication) {
-        String authorities = authentication.getAuthorities().stream()
+    public String createToken(Authentication authentication, Optional<String> username ) {
+        String authorities = authentication.getAuthorities()
+            .stream()
             .map(GrantedAuthority::getAuthority)
             .collect(Collectors.joining(","));
 
@@ -64,7 +66,6 @@ public class TokenProvider implements InitializingBean {
         return Jwts.builder()
             .setSubject(authentication.getName())
             .claim(AUTHORITIES_KEY, authorities)
-            //.claim("nickName", "21321")
             .signWith(key, SignatureAlgorithm.HS512)
             .setExpiration(validity)
             .compact();
