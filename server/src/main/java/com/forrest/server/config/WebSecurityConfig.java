@@ -73,7 +73,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/api/hello").permitAll()
                 .antMatchers("/api/login").permitAll()
                 .antMatchers("/api/users/signup").permitAll()
-            .anyRequest().authenticated()
+                .antMatchers("/swagger-ui/").permitAll()
+            // TODO: 2021.07.14 -Blue  회원가입 구현되면 permitAll() 수정
+            .anyRequest().permitAll()
 
             .and()
             .apply(new JwtSecurityConfig(tokenProvider));

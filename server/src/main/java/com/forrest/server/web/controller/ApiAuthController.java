@@ -2,8 +2,10 @@ package com.forrest.server.web.controller;
 
 import com.forrest.server.security.jwt.JwtFilter;
 import com.forrest.server.security.jwt.TokenProvider;
+import com.forrest.server.util.SecurityUtil;
 import com.forrest.server.web.dto.request.LoginReqDto;
-import com.forrest.server.web.dto.response.TokenResDto;
+import com.forrest.server.web.dto.response.TokenResponse;
+import java.util.Optional;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -26,13 +28,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
-public class LoginController {
+public class ApiAuthController {
 
     private final TokenProvider tokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResDto> authorize(@Valid @RequestBody LoginReqDto loginDto) {
+    public ResponseEntity<TokenResponse> authorize (@Valid @RequestBody LoginReqDto loginDto) {
 
         UsernamePasswordAuthenticationToken authenticationToken =
             new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword());
@@ -40,12 +42,13 @@ public class LoginController {
         // authenticate() 가 실행이 될 때 CustomUserService 의 loadByUsername 호출
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        Optional<String> username = SecurityUtil.getCurrentUsername();
 
-        String jwt = tokenProvider.createToken(authentication);
+        String jwt = tokenProvider.createToken(authentication, username);
 
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
 
-        return new ResponseEntity<>(new TokenResDto(jwt), httpHeaders, HttpStatus.OK);
+        return new ResponseEntity<>(new TokenResponse(jwt), httpHeaders, HttpStatus.OK);
     }
 }
