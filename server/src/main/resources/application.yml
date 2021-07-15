@@ -23,14 +23,3 @@ jwt:
   token-validity-in-seconds: 86400
 
 
-cloud:
-  aws:
-    s3:
-      bucket: bloo-image-store
-    region:
-      static: ap-northeast-2
-    credentials:
-      accessKey: AKIASP6HEPETDVQOERUQ
-      secretKey: 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
-    stack:
-      auto: false
