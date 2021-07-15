@@ -1,7 +1,6 @@
 package com.forrest.server.web.controller;
 
 import com.forrest.server.service.ApiPostService;
-import com.forrest.server.util.s3.S3FileUploader;
 import com.forrest.server.web.dto.request.PostSaveDto;
 import com.forrest.server.web.dto.request.PostUpdateDto;
 import com.forrest.server.web.dto.response.PostResponse;
@@ -38,7 +37,6 @@ public class ApiPostController {
         postService.savePost(saveDto);
         return ResponseEntity.created(URI.create("/api/posts")).build();
     }
-
 
     @GetMapping("")
     public ResponseEntity<List<PostResponse>> findAllPosts() {

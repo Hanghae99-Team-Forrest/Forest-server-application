@@ -35,6 +35,7 @@ public class ApiPostService {
     private final CategoryRepository categoryRepository;
     private final S3FileUploader s3FileUploader;
 
+    @Transactional
     public void savePost ( PostSaveDto saveDto ) throws IOException {
         Category category = findCategoryById(saveDto.getCategoryId());
         String url = s3FileUploader.upload(saveDto.getMultipartFile(), DIR_NAME);
