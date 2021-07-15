@@ -7,6 +7,8 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.forrest.server.util.exception.FileConvertFailException;
+import com.forrest.server.util.exception.ImageDeleteFailException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -54,13 +56,9 @@ public class S3FileUploader {
             .build();
     }
 
-    // 수정
     public String upload(MultipartFile multipartFile, String dirName) throws IOException {
-
         File uploadFile = convert(multipartFile)
-            .orElseThrow(() -> new IllegalArgumentException("MultipartFile -> File로 전환이 실패했습니다."));
-
-        System.out.println("업로드 파일 이름:" + uploadFile);
+            .orElseThrow(FileConvertFailException::new);
 
         return upload(uploadFile, dirName);
     }
@@ -73,18 +71,28 @@ public class S3FileUploader {
     }
 
     private String putS3(File uploadFile, String fileName) {
-        s3Client.putObject(
-            new PutObjectRequest(bucket, fileName, uploadFile)
+        s3Client.putObject (
+                new PutObjectRequest(bucket, fileName, uploadFile)
                 .withCannedAcl(CannedAccessControlList.PublicRead) // PublicRead 권한으로 업로드 됨
         );
         return s3Client.getUrl(bucket, fileName).toString(); // Url 받아옴
     }
 
+    // 로컬에 저장되는 파일 삭제
     private void removeNewFile(File targetFile) {
         if (targetFile.delete()) {
             log.info("파일이 삭제되었습니다.");
         } else {
             log.info("파일이 삭제되지 못했습니다.");
+        }
+    }
+
+    // 기존의 File Path 삭제
+    public void removeImg ( String imgUrl ) {
+        try {
+            s3Client.deleteObject(bucket, imgUrl);
+        } catch ( Exception ex ) {
+            throw new ImageDeleteFailException();
         }
     }
 
@@ -98,6 +106,4 @@ public class S3FileUploader {
         }
         return Optional.empty();
     }
-
-
 }

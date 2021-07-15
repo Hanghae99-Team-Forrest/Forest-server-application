@@ -18,8 +18,10 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 public class PostUpdateDto {
 
+    private Long categoryId;
     private String title;
     private String content;
+    private String userName;
     private MultipartFile multipartFile;
 
 }

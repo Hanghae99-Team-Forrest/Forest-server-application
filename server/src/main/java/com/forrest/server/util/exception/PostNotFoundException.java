@@ -1,4 +1,4 @@
-package com.forrest.server.util.exception.handler;
+package com.forrest.server.util.exception;
 
 /**
  * @Created by Bloo

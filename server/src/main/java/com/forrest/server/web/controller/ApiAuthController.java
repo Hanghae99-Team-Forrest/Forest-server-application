@@ -4,7 +4,7 @@ import com.forrest.server.security.jwt.JwtFilter;
 import com.forrest.server.security.jwt.TokenProvider;
 import com.forrest.server.util.SecurityUtil;
 import com.forrest.server.web.dto.request.LoginReqDto;
-import com.forrest.server.web.dto.response.TokenResDto;
+import com.forrest.server.web.dto.response.TokenResponse;
 import java.util.Optional;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ public class ApiAuthController {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResDto> authorize (@Valid @RequestBody LoginReqDto loginDto) {
+    public ResponseEntity<TokenResponse> authorize (@Valid @RequestBody LoginReqDto loginDto) {
 
         UsernamePasswordAuthenticationToken authenticationToken =
             new UsernamePasswordAuthenticationToken(loginDto.getUsername(), loginDto.getPassword());
@@ -49,6 +49,6 @@ public class ApiAuthController {
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.add(JwtFilter.AUTHORIZATION_HEADER, "Bearer " + jwt);
 
-        return new ResponseEntity<>(new TokenResDto(jwt), httpHeaders, HttpStatus.OK);
+        return new ResponseEntity<>(new TokenResponse(jwt), httpHeaders, HttpStatus.OK);
     }
 }

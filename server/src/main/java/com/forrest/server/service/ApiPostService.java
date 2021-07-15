@@ -1,13 +1,14 @@
 package com.forrest.server.service;
 
 import com.forrest.server.util.exception.CategoryNotFoundException;
-import com.forrest.server.util.exception.handler.PostNotFoundException;
+import com.forrest.server.util.exception.PostNotFoundException;
 import com.forrest.server.util.s3.S3FileUploader;
 import com.forrest.server.web.dto.request.PostSaveDto;
-import com.forrest.server.web.dto.response.PostDetailResponse;
-import com.forrest.server.web.dto.response.PostSimpleResponse;
+import com.forrest.server.web.dto.request.PostUpdateDto;
+import com.forrest.server.web.dto.response.PostResponse;
 import com.forrest.server.web.entity.category.Category;
 import com.forrest.server.web.entity.category.CategoryRepository;
+import com.forrest.server.web.entity.post.Post;
 import com.forrest.server.web.entity.post.PostRepository;
 import java.io.IOException;
 import java.util.List;
@@ -35,47 +36,61 @@ public class ApiPostService {
     private final S3FileUploader s3FileUploader;
 
     public void savePost ( PostSaveDto saveDto ) throws IOException {
-        Long categoryId = saveDto.getCategoryId();
-
-        Category category = categoryRepository.findById(categoryId)
-            .orElseThrow(CategoryNotFoundException::new);
-
+        Category category = findCategoryById(saveDto.getCategoryId());
         String url = s3FileUploader.upload(saveDto.getMultipartFile(), DIR_NAME);
-
         postRepository.save( saveDto.toEntity(url, category) );
     }
 
     @Transactional(readOnly = true)
-    public PostDetailResponse findPostDetailById ( Long id ) {
-
-        return postRepository.findById(id)
-            .map(PostDetailResponse::of)
-            .orElseThrow(PostNotFoundException::new);
-    }
-
-    @Transactional(readOnly = true)
-    public List<PostSimpleResponse> findAllPosts () {
-
+    public List<PostResponse> findAllPosts () {
         return postRepository.findAll()
             .stream()
-            .map(PostSimpleResponse::of)
+            .map(PostResponse::of)
             .collect(Collectors.toList());
     }
-    
-    @Transactional(readOnly = true)
-    public List<PostSimpleResponse> findAllPostsByCategoryId ( Long id ) {
 
-        Category category = categoryRepository.findById(id)
-            .orElseThrow(CategoryNotFoundException::new);
-
-        return postRepository.findByCategory(category)
-            .stream()
-            .map(PostSimpleResponse::of)
-            .collect(Collectors.toList());
-    }
-    
     @Transactional
-    public void updatePost ( Long id ) {
-        // TODO: 2021.07.14 -Blue 
+    public void updatePost ( Long postId, PostUpdateDto updateDto ) throws IOException {
+
+        Category category = findCategoryById(updateDto.getCategoryId());
+        Post post = findPostById(postId);
+
+        if (updateDto.getMultipartFile() != null) {
+            removeImg(post.getImgUrl());
+            updateImg(post, updateDto.getMultipartFile());
+        } else {
+            post.update(updateDto, category);
+        }
+
+    }
+
+
+    @Transactional
+    public void deletePostById ( Long id ) {
+        Post post = findPostById(id);
+        removeImg(post.getImgUrl());
+        postRepository.delete(post);
+    }
+
+    // 이미지 제거
+    private void removeImg ( String imgUrl ) {
+        s3FileUploader.removeImg(imgUrl);
+    }
+
+    // 이미지 수정
+    private void updateImg( Post post, MultipartFile multipartFile ) throws IOException {
+        post.updateImgUrl(s3FileUploader.upload(multipartFile, DIR_NAME));
+    }
+
+    // 카테고리 조회
+    private Category findCategoryById ( Long categoryId ) {
+        return categoryRepository.findById(categoryId)
+            .orElseThrow(CategoryNotFoundException::new);
+    }
+
+    // 게시글 조회
+    private Post findPostById ( Long postId ) {
+        return postRepository.findById(postId)
+            .orElseThrow(PostNotFoundException::new);
     }
 }
