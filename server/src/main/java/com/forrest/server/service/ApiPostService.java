@@ -58,12 +58,10 @@ public class ApiPostService {
         if (updateDto.getMultipartFile() != null) {
             removeImg(post.getImgUrl());
             updateImg(post, updateDto.getMultipartFile());
-        } else {
-            post.update(updateDto, category);
         }
 
+        post.update(updateDto, category);
     }
-
 
     @Transactional
     public void deletePostById ( Long id ) {
