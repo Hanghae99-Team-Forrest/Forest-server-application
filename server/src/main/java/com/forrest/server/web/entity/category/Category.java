@@ -30,8 +30,4 @@ public class Category extends BaseTimeEntity {
     @Column(nullable = false)
     private String name;
 
-    @ManyToOne ( fetch = FetchType.LAZY,
-                 cascade = CascadeType.ALL )
-
-    private Post post;
 }

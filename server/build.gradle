@@ -39,8 +39,10 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 
 	// Data Base - H2
-	runtimeOnly 'com.h2database:h2'
+	// runtimeOnly 'com.h2database:h2'
 
+	// Data Base - MYSQL
+	runtimeOnly 'mysql:mysql-connector-java'
 	// JWT
 	compile group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
 	runtime group: 'io.jsonwebtoken', name: 'jjwt-impl', version: '0.11.2'
