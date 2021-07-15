@@ -1,5 +1,7 @@
 package com.forrest.server.web.entity.post;
 
+import com.forrest.server.web.dto.request.PostSaveDto;
+import com.forrest.server.web.dto.request.PostUpdateDto;
 import com.forrest.server.web.entity.BaseTimeEntity;
 import com.forrest.server.web.entity.category.Category;
 import javax.persistence.CascadeType;
@@ -10,6 +12,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,34 +26,57 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
+@Table(
+    uniqueConstraints={
+        @UniqueConstraint (
+            columnNames={"userName","password"}
+        )
+    }
+)
 public class Post  extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "userName", unique = false)
+    private String userName;
+
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String content;
 
-    @Column(nullable = false )
-    private int grade;
+    @Column(name = "password", nullable = false)
+    private String password;
 
-    @Column(nullable = false)
-    private boolean open;
+    @Column(nullable = true)
+    private String imgUrl;
 
     @ManyToOne ( fetch = FetchType.LAZY,
                  cascade = CascadeType.ALL )
     private Category category;
 
     @Builder
-    public Post ( String title, String content, int grade, boolean open ) {
+    public Post ( String userName, String title, String content, String password,
+        String imgUrl, Category category ) {
+        this.userName = userName;
         this.title = title;
         this.content = content;
-        this.grade = grade;
-        this.open = open;
+        this.password = password;
+        this.imgUrl = imgUrl;
+        this.category = category;
     }
 
+    public void update ( PostUpdateDto updateDto, Category category ) {
+        this.userName = updateDto.getUserName();
+        this.title = updateDto.getTitle();
+        this.content = updateDto.getContent();
+        this.category = category;
+    }
+
+    public void updateImgUrl ( String newImgUrl ) {
+        this.imgUrl = newImgUrl;
+    }
 }
